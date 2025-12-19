@@ -12,7 +12,10 @@ import autoTable from 'jspdf-autotable';
 import './App.css';
 
 // 1. Clinical Mappings
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+if (API_BASE_URL && !API_BASE_URL.startsWith('http')) {
+  API_BASE_URL = `https://${API_BASE_URL}`;
+}
 
 const friendlyLabels = {
   age: { label: "Patient Age", desc: "Risk naturally increases with physiological age." },
