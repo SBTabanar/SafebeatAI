@@ -155,4 +155,35 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 @keyframes heart { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
 .pulse-slow { animation: heart 2s infinite; color: #cbd5e1; }
 .eraser-btn { background: none; border: none; color: var(--text-soft); cursor: pointer; }
-@media (max-width: 1000px) { .diagnostic-view { grid-template-columns: 1fr; } .sidebar-clinical { display: none; } }
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 1024px) {
+  .diagnostic-view { grid-template-columns: 1fr; overflow-y: auto; }
+  .pane-input { border-right: none; border-bottom: 1px solid var(--border); }
+  .sidebar-clinical { width: 0; position: fixed; left: 0; top: 64px; bottom: 48px; z-index: 2000; box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+  .sidebar-clinical.mobile-open { width: 280px; }
+  .root-layout { height: auto; min-height: 100vh; overflow-y: auto; }
+  body, html, #root { height: auto; overflow: visible; }
+}
+
+@media (max-width: 768px) {
+  .navbar-fixed { padding: 0 16px; }
+  .nav-text h2 { font-size: 1rem; }
+  .diagnostic-grid { grid-template-columns: 1fr; }
+  .pane-input, .pane-output { padding: 20px; }
+  .result-title-row { flex-direction: column; align-items: flex-start; }
+  .model-breakdown-grid { grid-template-columns: 1fr; }
+  .tut-card { width: 90vw; padding: 20px; }
+  .tutorial-card-wrapper { padding: 20px; }
+  .footer-bar-clinical { padding: 0 16px; height: auto; padding: 10px 16px; }
+  .footer-inner { flex-direction: column; gap: 4px; text-align: center; }
+  .app-main-body { flex-direction: column; height: auto; overflow: visible; }
+  .diagnostic-view { height: auto; overflow: visible; }
+  .root-layout { display: block; }
+}
+
+/* MOBILE MENU TOGGLE */
+.mobile-menu-btn { display: none; background: none; border: none; color: white; cursor: pointer; padding: 8px; }
+@media (max-width: 1024px) {
+  .mobile-menu-btn { display: block; }
+}

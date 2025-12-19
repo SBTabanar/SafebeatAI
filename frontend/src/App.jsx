@@ -4,7 +4,7 @@ import {
   Activity, Heart, AlertCircle, CheckCircle2, ShieldCheck, 
   Database, Zap, Stethoscope, RefreshCcw, HelpCircle, User, X,
   Download, History, Moon, Sun, Trash2, ChevronRight, FileText, UserPlus,
-  ArrowUpRight, ArrowDownRight, Info, ChevronLeft, Eraser
+  ArrowUpRight, ArrowDownRight, Info, ChevronLeft, Eraser, Menu
 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar as RechartsRadar } from 'recharts';
 import jsPDF from 'jspdf';
@@ -59,6 +59,7 @@ function App() {
   const [autoAnalyze, setAutoAnalyze] = useState(false);
   const [isTutorialActive, setIsTutorialActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 3. Lifecycle
   useEffect(() => {
@@ -254,6 +255,9 @@ function App() {
       <div className="main-card">
         <nav className="navbar-fixed">
           <div className="nav-brand-group">
+            <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
             <div className="icon-badge-red"><Heart fill="white" size={20} /></div>
             <div className="nav-text"><h2>SafeBeat AI</h2><span>Diagnostic Portal</span></div>
           </div>
@@ -265,7 +269,7 @@ function App() {
         </nav>
 
         <div className="app-main-body">
-          <aside className={`sidebar-clinical ${isTutorialActive && tutorialSteps[currentStep].target === 'sidebar' ? 'highlight-active' : ''}`}>
+          <aside className={`sidebar-clinical ${isMobileMenuOpen ? 'mobile-open' : ''} ${isTutorialActive && tutorialSteps[currentStep].target === 'sidebar' ? 'highlight-active' : ''}`}>
             <div className="sidebar-top"><History size={16} /> <h4>Activity</h4><button onClick={clearHistory} className="eraser-btn"><Eraser size={16}/></button></div>
             <div className="sidebar-scroll">
               {history.map(item => (
