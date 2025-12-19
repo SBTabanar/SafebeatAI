@@ -1,0 +1,41 @@
+{
+  "requestId": "edEHgluYQdy4DfpKDcO5xA",
+  "timestamp": "2025-12-19T08:57:44.999740458Z",
+  "method": "GET",
+  "path": "/",
+  "host": "safebeatai-ui-production.up.railway.app",
+  "httpStatus": 502,
+  "upstreamProto": "",
+  "downstreamProto": "HTTP/2.0",
+  "responseDetails": "Retried single replica",
+  "totalDuration": 681,
+  "upstreamAddress": "",
+  "clientUa": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "upstreamRqDuration": 516,
+  "txBytes": 4682,
+  "rxBytes": 803,
+  "srcIp": "143.44.196.28",
+  "edgeRegion": "asia-southeast1-eqsg3a",
+  "upstreamErrors": "[{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":173,\"error\":\"connection refused\"},{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":172,\"error\":\"connection refused\"},{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":171,\"error\":\"connection refused\"}]"
+}
+
+{
+  "requestId": "k__OKGnZSQO422QiDcO5xA",
+  "timestamp": "2025-12-19T08:57:45.643207630Z",
+  "method": "GET",
+  "path": "/favicon.ico",
+  "host": "safebeatai-ui-production.up.railway.app",
+  "httpStatus": 502,
+  "upstreamProto": "",
+  "downstreamProto": "HTTP/2.0",
+  "responseDetails": "Retried single replica",
+  "totalDuration": 513,
+  "upstreamAddress": "",
+  "clientUa": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "upstreamRqDuration": 510,
+  "txBytes": 109,
+  "rxBytes": 723,
+  "srcIp": "143.44.196.28",
+  "edgeRegion": "asia-southeast1-eqsg3a",
+  "upstreamErrors": "[{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":170,\"error\":\"connection refused\"},{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":170,\"error\":\"connection refused\"},{\"deploymentInstanceID\":\"dbc5e4ba-354a-4300-b6c0-1d0a3d61808e\",\"duration\":170,\"error\":\"connection refused\"}]"
+}
