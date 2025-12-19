@@ -1,0 +1,22 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+backend_err.log
+backend_out.log
+
+# Node
+node_modules/
+frontend/dist/
+frontend_err.log
+frontend_out.log
+.env
+
+# Models & Data (Optional, but usually ignored if large)
+# *.pkl
+# *.csv
+
+# OS
+.DS_Store
+Thumbs.db
