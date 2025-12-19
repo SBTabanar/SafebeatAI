@@ -7,7 +7,7 @@ Developed by **SBTabanar**, this platform is designed for clinical transparency,
 ---
 
 ## 👨‍💻 Author & Lead Developer
-**SBTabanar**
+**Sergei Benjamin S. Tabanar**
 
 ---
 
@@ -85,8 +85,3 @@ Open the local URL provided by Vite (usually **[http://localhost:5173](http://lo
 
 ## ⚖️ Ethical AI Disclaimer
 This application is a software prototype developed for educational and portfolio purposes. It is **not** a certified medical device and should **not** be used for actual clinical diagnosis. Always consult a board-certified physician for medical advice.
-
----
-
-## 📜 License
-This project is licensed under the MIT License - see the LICENSE file for details.
