@@ -20,7 +20,7 @@ if (API_BASE_URL && !API_BASE_URL.startsWith('http')) {
 const friendlyLabels = {
   age: { label: "Patient Age", desc: "Risk naturally increases with physiological age." },
   sex: { label: "Biological Sex", desc: "Statistical variance based on biological markers." },
-  cp: { label: "Chest Pain Severity", desc: "Typical angina is a high-weight clinical indicator." },
+  cp: { label: "Chest Pain Type", desc: "Typical angina is a high-weight clinical indicator." },
   trestbps: { label: "Resting Blood Pressure", desc: "High pressure strains the cardiac muscle over time." },
   chol: { label: "Serum Cholesterol", desc: "Elevated levels contribute to arterial plaque buildup." },
   fbs: { label: "Fasting Blood Sugar", desc: "High sugar levels can damage blood vessels." },
@@ -29,7 +29,7 @@ const friendlyLabels = {
   exang: { label: "Exercise Angina", desc: "Pain during physical activity is a significant marker." },
   oldpeak: { label: "ST Depression", desc: "Stress-induced heart strain measured via EKG." },
   slope: { label: "ST Slope", desc: "The shape of the EKG curve during peak exercise." },
-  ca: { label: "Major Vessels", desc: "Higher number of blocked vessels correlates with risk." },
+  ca: { label: "Major Vessels (Fluoroscopy)", desc: "Number of major vessels (0-3) colored by flourosopy." },
   thal: { label: "Thalassemia Type", desc: "Genetic blood flow markers impacting oxygen delivery." }
 };
 
@@ -296,14 +296,14 @@ function App() {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className={`diagnostic-grid ${isTutorialActive && tutorialSteps[currentStep].target === 'inputs' ? 'element-focus' : ''}`}>
-                  <div className="input-field"><label>Age</label><input name="age" value={formData.age} onChange={handleChange} className={getValidation('age', formData.age) ? 'err' : ''}/></div>
-                  <div className="input-field"><label>Sex</label><select name="sex" value={formData.sex} onChange={handleChange}><option value="1">Male</option><option value="0">Female</option></select></div>
-                  <div className="input-field"><label>Chest Pain</label><select name="cp" value={formData.cp} onChange={handleChange}><option value="0">Typical</option><option value="1">Atypical</option><option value="2">Non-anginal</option><option value="3">None</option></select></div>
-                  <div className="input-field"><label>Resting BP</label><input name="trestbps" value={formData.trestbps} onChange={handleChange} className={getValidation('trestbps', formData.trestbps) ? 'err' : ''}/></div>
-                  <div className="input-field"><label>Cholesterol</label><input name="chol" value={formData.chol} onChange={handleChange} className={getValidation('chol', formData.chol) ? 'err' : ''}/></div>
-                  <div className="input-field"><label>Max HR</label><input name="thalach" value={formData.thalach} onChange={handleChange}/></div>
-                  <div className="input-field"><label>Vessels (0-3)</label><input name="ca" value={formData.ca} onChange={handleChange}/></div>
-                  <div className="input-field"><label>Thalassemia</label><select name="thal" value={formData.thal} onChange={handleChange}><option value="1">Normal</option><option value="2">Fixed</option><option value="3">Reversable</option></select></div>
+                  <div className="input-field"><label>Patient Age</label><input name="age" value={formData.age} onChange={handleChange} className={getValidation('age', formData.age) ? 'err' : ''}/></div>
+                  <div className="input-field"><label>Biological Sex</label><select name="sex" value={formData.sex} onChange={handleChange}><option value="1">Male</option><option value="0">Female</option></select></div>
+                  <div className="input-field"><label>Chest Pain Type</label><select name="cp" value={formData.cp} onChange={handleChange}><option value="0">Typical Angina</option><option value="1">Atypical Angina</option><option value="2">Non-anginal Pain</option><option value="3">Asymptomatic (None)</option></select></div>
+                  <div className="input-field"><label>Resting Blood Pressure (mm Hg)</label><input name="trestbps" value={formData.trestbps} onChange={handleChange} className={getValidation('trestbps', formData.trestbps) ? 'err' : ''}/></div>
+                  <div className="input-field"><label>Cholesterol (mg/dl)</label><input name="chol" value={formData.chol} onChange={handleChange} className={getValidation('chol', formData.chol) ? 'err' : ''}/></div>
+                  <div className="input-field"><label>Max Heart Rate (BPM)</label><input name="thalach" value={formData.thalach} onChange={handleChange}/></div>
+                  <div className="input-field"><label>Major Vessels (0-3 Colored)</label><input name="ca" value={formData.ca} onChange={handleChange}/></div>
+                  <div className="input-field"><label>Thalassemia Genetic Marker</label><select name="thal" value={formData.thal} onChange={handleChange}><option value="1">Normal</option><option value="2">Fixed Defect</option><option value="3">Reversible Defect</option></select></div>
                 </div>
                 {!autoAnalyze && <button type="submit" className="analyze-btn-clinical">Analyze</button>}
               </form>
