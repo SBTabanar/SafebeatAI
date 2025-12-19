@@ -12,6 +12,8 @@ import autoTable from 'jspdf-autotable';
 import './App.css';
 
 // 1. Clinical Mappings
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const friendlyLabels = {
   age: { label: "Patient Age", desc: "Risk naturally increases with physiological age." },
   sex: { label: "Biological Sex", desc: "Statistical variance based on biological markers." },
@@ -74,7 +76,7 @@ function App() {
   // 4. Handlers
   const checkHealth = async () => {
     try {
-      const response = await fetch('http://localhost:5001/health');
+      const response = await fetch(`${API_BASE_URL}/health`);
       if (response.ok) setBackendStatus("Online");
       else setBackendStatus("Offline");
     } catch (err) { setBackendStatus("Offline"); }
@@ -82,7 +84,7 @@ function App() {
 
   const triggerAnalysis = async (data) => {
     try {
-      const response = await axios.post('http://localhost:5001/predict', data);
+      const response = await axios.post(`${API_BASE_URL}/predict`, data);
       setResult(response.data);
       updateHistory(data, response.data);
     } catch (err) {}
@@ -93,7 +95,7 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5001/predict', formData);
+      const response = await axios.post(`${API_BASE_URL}/predict`, formData);
       setResult(response.data);
       updateHistory(formData, response.data);
     } catch (err) { setError("Server Connection Failed."); } finally { setLoading(false); }

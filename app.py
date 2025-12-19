@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import logging
 
+import os
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -12,13 +14,20 @@ app = Flask(__name__)
 CORS(app) 
 
 # Load the ensemble
+# Use absolute path or relative to app.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ensemble_path = os.path.join(BASE_DIR, 'ensemble_models.pkl')
+
 try:
-    ensemble = joblib.load('ensemble_models.pkl')
+    ensemble = joblib.load(ensemble_path)
     logger.info("Ensemble loaded successfully.")
 except Exception as e:
     logger.error(f"Failed to load ensemble: {e}")
+    ensemble = None
 
-FEATURES = ensemble['feature_names']
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({"message": "SafeBeat AI API is running"}), 200
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -26,7 +35,10 @@ def health():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    if ensemble is None:
+        return jsonify({"error": "Model not loaded on server"}), 500
     try:
+        FEATURES = ensemble['feature_names']
         data = request.json
         if not data: return jsonify({"error": "No data"}), 400
         
@@ -80,4 +92,5 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port)
