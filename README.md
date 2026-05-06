@@ -1,4 +1,3 @@
-<img width="2547" height="1266" alt="Safebeat Comparison" src="https://github.com/user-attachments/assets/a65ce8ec-2937-4041-b568-1a43b4de7ee4" /><div align="center">
 
 ![SafeBeat AI](https://img.shields.io/badge/SafeBeat%20AI-Clinical%20Diagnostics-2563eb?style=for-the-badge&logo=heart-pulse&logoColor=white)
 
@@ -11,6 +10,8 @@
 </div>
 
 <h1 align="center">SafeBeat AI - Clinical Diagnostic Portal</h1>
+
+<img width="2557" height="1282" alt="Safebeat Screenshot" src="https://github.com/user-attachments/assets/384e6921-5d9f-414e-90ce-e6e33cc5e2a1" />
 
 <p align="center">
   <strong>A production-ready, open-source cardiovascular decision support system.</strong><br>
@@ -45,9 +46,7 @@ Developed by **SBTabanar**, this platform is designed for clinical transparency,
 - **Real-Time 'What-If' Analysis:** Live-update toggle allowing clinicians to adjust biomarkers and see the risk map update instantly.
 - **Production-Ready:** Dockerized, rate-limited, structured logging, CI/CD, and health checks.
 - 
-<img width="2557" height="1282" alt="Safebeat Screenshot" src="https://github.com/user-attachments/assets/384e6921-5d9f-414e-90ce-e6e33cc5e2a1" />
 
-<img width="804" height="1117" alt="Safebeat Report Screenshot" src="https://github.com/user-attachments/assets/2783ec7c-6184-4b19-a180-ed4c011edd17" />
 
 <img width="2547" height="1266" alt="Safebeat Comparison" src="https://github.com/user-attachments/assets/cbdc54e5-7fc0-4232-ad15-fdf706c14be4" />
 
@@ -281,6 +280,9 @@ Identified and resolved a critical label-swap and feature alignment issue in the
 | **XGBoost** | 88.7% |
 
 **Top Predictors:** Major Vessels (CA), Thalassemia (THAL), ST Depression (Oldpeak).
+
+
+<img width="804" height="1117" alt="Safebeat Report Screenshot" src="https://github.com/user-attachments/assets/2783ec7c-6184-4b19-a180-ed4c011edd17" />
 
 ---
 
