@@ -1,0 +1,43 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: safebeat-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - HOST=0.0.0.0
+      - FLASK_DEBUG=false
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=*
+      - RATE_LIMIT=100 per minute
+      - MODEL_PATH=ensemble_models.pkl
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - safebeat-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: safebeat-frontend
+    restart: unless-stopped
+    ports:
+      - "5174:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - safebeat-network
+
+networks:
+  safebeat-network:
+    driver: bridge
