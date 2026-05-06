@@ -39,3 +39,9 @@ htmlcov/
 build/
 dist/
 *.egg-info/
+
+# Project management & review docs (not for public repo)
+LINKEDIN_POST.md
+DEPLOYMENT.md
+REVIEW.md
+SECURITY.md
