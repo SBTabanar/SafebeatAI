@@ -768,6 +768,81 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 @keyframes heart { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.8; } }
 .pulse-slow { animation: heart 2s infinite; color: #cbd5e1; }
 
+.ephemeral-banner {
+  position: fixed;
+  top: calc(64px + env(safe-area-inset-top));
+  left: 0; right: 0;
+  z-index: 3000;
+  background: rgba(245, 158, 11, 0.12);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--warning);
+  padding: 8px 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+}
+
+.error-boundary-fallback {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+.error-boundary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  text-align: center;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-lg);
+}
+.error-boundary-card h2 { font-size: 1.2rem; font-weight: 800; }
+.error-boundary-card p { font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; }
+
+.bias-warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+.bias-warning-banner svg { flex-shrink: 0; color: var(--warning); margin-top: 1px; }
+
+.field-ref { font-weight: 600; opacity: 0.5; font-size: 0.55rem; margin-left: 6px; text-transform: uppercase; }
+
+.batch-table tr.error-row td { background: var(--danger-soft); color: var(--danger); font-size: 0.75rem; }
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .pulse-slow { animation: none; }
+  .report-btn-pulsing { animation: none; }
+}
+
+/* Colorblind-friendly indicators */
+.h-badge.risk::before { content: '⚠ '; }
+.h-badge.safe::before { content: '✓ '; }
+.m-verdict.risk::before { content: '↑ '; }
+.m-verdict.safe::before { content: '↓ '; }
+
 /* Mobile responsiveness */
 .mobile-menu-btn { display: none; background: none; border: none; color: white; cursor: pointer; padding: 8px; }
 

@@ -25,10 +25,7 @@ COPY --chown=safebeat:safebeat \
     app.py \
     ensemble_models.pkl \
     feature_names.pkl \
-    train_ensemble.py \
-    combined-heart-data.csv \
-    heart-disease.csv \
-    new-heart-data.csv \
+    model_meta.json \
     ./
 
 USER safebeat

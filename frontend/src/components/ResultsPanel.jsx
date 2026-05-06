@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Activity, Download, Copy, Share2, Info, CheckCircle2,
   AlertTriangle, TrendingUp, TrendingDown, ChevronDown, ChevronUp,
-  HeartPulse
+  HeartPulse, ShieldAlert
 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar as RechartsRadar } from 'recharts';
 import { useSimpleMode } from '../context/SimpleModeContext';
@@ -100,17 +100,24 @@ export default function ResultsPanel({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {result.bias_warning && (
+          <div className="bias-warning-banner" role="alert">
+            <ShieldAlert size={14} aria-hidden="true" />
+            <span>{result.bias_warning}</span>
+          </div>
+        )}
+
         <div className="result-header">
           {!simpleMode && <div className="consensus-pill">{result.consensus}</div>}
           <div className="result-actions">
-            <button onClick={onCopyResult} className="icon-btn" title="Copy result">
-              <Copy size={16} />
+            <button onClick={onCopyResult} className="icon-btn" title="Copy result" aria-label="Copy result to clipboard">
+              <Copy size={16} aria-hidden="true" />
             </button>
-            <button onClick={onShareResult} className="icon-btn" title="Share result">
-              <Share2 size={16} />
+            <button onClick={onShareResult} className="icon-btn" title="Share result" aria-label="Share result">
+              <Share2 size={16} aria-hidden="true" />
             </button>
-            <button onClick={onDownloadPDF} className="report-btn-pulsing">
-              <Download size={18} /> {simpleMode ? 'Save Report' : 'Generate Report'}
+            <button onClick={onDownloadPDF} className="report-btn-pulsing" aria-label={simpleMode ? 'Save PDF report' : 'Generate PDF report'}>
+              <Download size={18} aria-hidden="true" /> {simpleMode ? 'Save Report' : 'Generate Report'}
             </button>
           </div>
         </div>

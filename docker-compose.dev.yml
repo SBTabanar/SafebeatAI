@@ -1,0 +1,19 @@
+services:
+  backend:
+    environment:
+      - FLASK_DEBUG=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./:/app
+    command: python app.py
+
+  frontend:
+    build:
+      target: builder
+    ports:
+      - "5173:5173"
+    command: npm run dev
+    volumes:
+      - ./:/app
+    environment:
+      - VITE_API_URL=http://localhost:5001

@@ -3,6 +3,10 @@ import { motion } from 'framer-motion';
 import { UserPlus, Zap, RotateCcw, Sparkles, ChevronDown } from 'lucide-react';
 import { useSimpleMode } from '../context/SimpleModeContext';
 
+function sanitizeName(name) {
+  return name.replace(/[^\w\s\-\.]/g, '').substring(0, 100);
+}
+
 const PRESETS = [
   { name: 'Young Healthy', data: { patientName: 'Young Healthy', age: '25', sex: '1', cp: '0', trestbps: '110', chol: '170', fbs: '0', restecg: '0', thalach: '180', exang: '0', oldpeak: '0.0', slope: '1', ca: '0', thal: '2' } },
   { name: 'Middle-Aged Risk', data: { patientName: 'Middle-Aged Risk', age: '55', sex: '1', cp: '2', trestbps: '140', chol: '240', fbs: '1', restecg: '1', thalach: '140', exang: '1', oldpeak: '2.5', slope: '2', ca: '1', thal: '3' } },
@@ -34,7 +38,8 @@ export default function PatientForm({
   onToggleAutoAnalyze,
   isTutorialActive,
   isTutorialTarget,
-  loading
+  loading,
+  referenceRanges
 }) {
   const { simpleMode } = useSimpleMode();
   const [showPresets, setShowPresets] = useState(false);
@@ -61,20 +66,17 @@ export default function PatientForm({
   };
 
   const resetForm = () => {
-    onChange({ target: { name: 'patientName', value: 'New Patient' } });
-    onChange({ target: { name: 'age', value: '50' } });
-    onChange({ target: { name: 'sex', value: '1' } });
-    onChange({ target: { name: 'cp', value: '0' } });
-    onChange({ target: { name: 'trestbps', value: '120' } });
-    onChange({ target: { name: 'chol', value: '200' } });
-    onChange({ target: { name: 'fbs', value: '0' } });
-    onChange({ target: { name: 'restecg', value: '0' } });
-    onChange({ target: { name: 'thalach', value: '150' } });
-    onChange({ target: { name: 'exang', value: '0' } });
-    onChange({ target: { name: 'oldpeak', value: '0.0' } });
-    onChange({ target: { name: 'slope', value: '1' } });
-    onChange({ target: { name: 'ca', value: '0' } });
-    onChange({ target: { name: 'thal', value: '2' } });
+    const defaults = {
+      patientName: 'New Patient', age: '50', sex: '1', cp: '0',
+      trestbps: '120', chol: '200', fbs: '0', restecg: '0',
+      thalach: '150', exang: '0', oldpeak: '0.0', slope: '1', ca: '0', thal: '2'
+    };
+    Object.entries(defaults).forEach(([k, v]) => onChange({ target: { name: k, value: v } }));
+  };
+
+  const handleNameChange = (e) => {
+    const sanitized = sanitizeName(e.target.value);
+    onChange({ target: { name: e.target.name, value: sanitized } });
   };
 
   const renderField = (name) => {
@@ -82,6 +84,8 @@ export default function PatientForm({
     const label = simpleMode ? config.simple : config.clinical;
     const error = getValidation(name, formData[name]);
     const isDanger = error && (error.includes('Elevated') || error.includes('High'));
+    const errorId = error ? `error-${name}` : undefined;
+    const refRange = referenceRanges?.[name] || config.ref;
 
     return (
       <motion.div
@@ -92,18 +96,26 @@ export default function PatientForm({
         onMouseEnter={() => setActiveTooltip(name)}
         onMouseLeave={() => setActiveTooltip(null)}
       >
-        <label>
+        <label htmlFor={name}>
           {label}
           {config?.unit && <span className="field-unit">{config.unit}</span>}
+          {refRange && <span className="field-ref">Ref: {refRange}</span>}
         </label>
         {config?.options ? (
-          <select name={name} value={formData[name]} onChange={onChange}>
+          <select
+            id={name}
+            name={name}
+            value={formData[name]}
+            onChange={onChange}
+            aria-describedby={errorId}
+          >
             {config.options.map(([val, text]) => (
               <option key={val} value={val}>{text}</option>
             ))}
           </select>
         ) : (
           <input
+            id={name}
             type="number"
             name={name}
             value={formData[name]}
@@ -112,13 +124,16 @@ export default function PatientForm({
             max={config?.max}
             step={config?.step}
             className={error ? 'err' : ''}
+            aria-describedby={errorId}
           />
         )}
         {error && (
           <motion.span
+            id={errorId}
             className={`field-error ${isDanger ? 'warning' : ''}`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
+            role="alert"
           >
             {error}
           </motion.span>
@@ -158,9 +173,10 @@ export default function PatientForm({
               name="patientName"
               type="text"
               value={formData.patientName}
-              onChange={onChange}
+              onChange={handleNameChange}
               className="name-field-large"
               placeholder={simpleMode ? 'Enter name...' : 'Enter patient name...'}
+              aria-label={simpleMode ? 'Full name' : 'Full patient name'}
             />
           </div>
           <div className="preset-wrap">

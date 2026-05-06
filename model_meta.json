@@ -1,0 +1,29 @@
+{
+  "model_version": "2.8.0-ensemble",
+  "trained_at": "2025-01-15T00:00:00Z",
+  "dataset": "combined-heart-data.csv",
+  "dataset_size": 573,
+  "dataset_sources": ["UCI Heart Disease", "Secondary clinical source"],
+  "demographic_bias_warning": "Training data skews toward male and Caucasian populations. Predictions may be less accurate for underrepresented demographics.",
+  "models": {
+    "RandomForest": {
+      "accuracy": "88.7%",
+      "accuracy_val": 0.887,
+      "params": {"n_estimators": 100, "max_depth": 10, "min_samples_leaf": 4}
+    },
+    "LogisticRegression": {
+      "accuracy": "89.6%",
+      "accuracy_val": 0.896,
+      "params": {"max_iter": 1000}
+    },
+    "XGBoost": {
+      "accuracy": "88.7%",
+      "accuracy_val": 0.887,
+      "params": {"n_estimators": 100, "learning_rate": 0.05, "max_depth": 3}
+    }
+  },
+  "ensemble_validation_accuracy": "94.78%",
+  "ensemble_validation_accuracy_val": 0.9478,
+  "feature_names": ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"],
+  "top_predictors": ["ca", "thal", "oldpeak"]
+}

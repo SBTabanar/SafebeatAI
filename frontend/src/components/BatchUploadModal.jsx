@@ -152,12 +152,12 @@ export default function BatchUploadModal({ isOpen, onClose, onBatchPredict }) {
                     </thead>
                     <tbody>
                       {results.slice(0, 20).map((r, i) => (
-                        <tr key={i} className={r.prediction === 1 ? 'risk' : 'safe'}>
+                        <tr key={i} className={r.error ? 'error-row' : (r.prediction === 1 ? 'risk' : 'safe')}>
                           <td>{i + 1}</td>
-                          <td>{r.age}</td>
-                          <td>{r.sex === '1' ? 'M' : 'F'}</td>
-                          <td>{r.result}</td>
-                          <td>{r.confidence}</td>
+                          <td>{r.age ?? '-'}</td>
+                          <td>{r.sex === '1' ? 'M' : r.sex === '0' ? 'F' : '-'}</td>
+                          <td>{r.error ? `Error: ${r.error}` : r.result}</td>
+                          <td>{r.confidence ?? '-'}</td>
                         </tr>
                       ))}
                     </tbody>

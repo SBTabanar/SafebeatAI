@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Keyboard, Command } from 'lucide-react';
+import { X, Keyboard, Command, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 
 import { ToastProvider, useToast } from './context/ToastContext';
 import { SimpleModeProvider, useSimpleMode } from './context/SimpleModeContext';
 import { useOffline } from './hooks/useOffline';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
+import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import PatientForm from './components/PatientForm';
@@ -20,6 +21,10 @@ import ExportModal from './components/ExportModal';
 import './App.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+// Axios defaults
+axios.defaults.timeout = 15000;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const tutorialStepsTargets = ['sidebar', 'profile', 'inputs', 'auto', 'results'];
 
@@ -44,6 +49,7 @@ function AppContent() {
   const [isTutorialActive, setIsTutorialActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [ephemeralMode, setEphemeralMode] = useLocalStorage('safebeat_ephemeral', false);
 
   const [showBatch, setShowBatch] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
@@ -74,6 +80,7 @@ function AppContent() {
   };
 
   const updateHistory = useCallback((data, res) => {
+    if (ephemeralMode) return;
     const entry = {
       id: Date.now(),
       date: new Date().toLocaleString(),
@@ -86,11 +93,11 @@ function AppContent() {
       const filtered = prev.filter(h => h.name !== data.patientName || JSON.stringify(h.data) !== JSON.stringify(data));
       return [entry, ...filtered].slice(0, 50);
     });
-  }, [setHistory]);
+  }, [setHistory, ephemeralMode]);
 
   const triggerAnalysis = useCallback(async (data) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/predict`, data);
+      const response = await axios.post(`${API_BASE_URL}/v1/predict`, data);
       setResult(response.data);
       updateHistory(data, response.data);
     } catch (err) {
@@ -103,7 +110,7 @@ function AppContent() {
     if (loading) return;
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/predict`, formData);
+      const response = await axios.post(`${API_BASE_URL}/v1/predict`, formData);
       setResult(response.data);
       updateHistory(formData, response.data);
       addToast(simpleMode ? 'Check complete!' : 'Analysis complete!', 'success');
@@ -136,21 +143,24 @@ function AppContent() {
 
   const clearHistory = () => {
     clearHistoryStorage();
-    addToast(simpleMode ? 'History cleared' : 'History cleared', 'info');
+    addToast('History cleared', 'info');
   };
 
   const handleBatchPredict = async (rows) => {
-    const predictions = [];
-    for (const row of rows) {
-      try {
-        const res = await axios.post(`${API_BASE_URL}/predict`, row);
-        predictions.push({ ...row, ...res.data });
-      } catch {
-        predictions.push({ ...row, error: 'Prediction failed' });
+    try {
+      const response = await axios.post(`${API_BASE_URL}/v1/batch`, rows);
+      const data = response.data;
+      const successes = data.results.filter(r => r.error === null);
+      const failures = data.results.filter(r => r.error !== null);
+      if (failures.length) {
+        addToast(`${failures.length} row(s) failed validation. Check the table for details.`, 'error', 6000);
       }
+      addToast(simpleMode ? `Done! ${successes.length} people checked` : `Batch complete: ${successes.length} processed, ${failures.length} failed`, 'success');
+      return data.results;
+    } catch (err) {
+      addToast(err.response?.data?.error || 'Batch upload failed.', 'error');
+      return rows.map((r, i) => ({ ...r, row: i, error: 'Request failed', prediction: null }));
     }
-    addToast(simpleMode ? `Done! ${predictions.length} people checked` : `Batch complete: ${predictions.length} patients processed`, 'success');
-    return predictions;
   };
 
   const handleCompare = (a, b) => {
@@ -166,15 +176,23 @@ function AppContent() {
       import('jspdf-autotable').then(({ default: autoTable }) => {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
+        const safeName = (result.patientName || formData.patientName || 'Patient').replace(/[^\w\s\-\.]/g, '').substring(0, 50);
 
         doc.setFillColor(15, 23, 42); doc.rect(0, 0, pageWidth, 50, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(28); doc.setFont('helvetica', 'bold');
         doc.text('SafeBeat AI', 20, 28);
         doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-        doc.text('CONFIDENTIAL CLINICAL DIAGNOSTIC DOSSIER', 20, 38);
+        doc.text('CLINICAL DECISION SUPPORT REPORT — NOT A MEDICAL DIAGNOSIS', 20, 38);
         doc.text(`REPORT ID: SB-${Date.now()}`, pageWidth - 80, 28);
         doc.text(`ISSUED: ${new Date().toLocaleString()}`, pageWidth - 80, 34);
+        doc.text(`MODEL: ${result.model_version || 'unknown'}`, pageWidth - 80, 40);
+
+        if (result.bias_warning) {
+          doc.setTextColor(245, 158, 11);
+          doc.setFontSize(8);
+          doc.text(`BIAS NOTICE: ${result.bias_warning.substring(0, 120)}`, 20, 46);
+        }
 
         doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.setFont('helvetica', 'bold');
         doc.text('Section I: Patient Clinical Record', 20, 65);
@@ -182,7 +200,7 @@ function AppContent() {
           startY: 70,
           head: [['Biomarker', 'Measured Value', 'Ref. Range']],
           body: [
-            ['Patient Name', formData.patientName, 'N/A'],
+            ['Patient Name', safeName, 'N/A'],
             ['Age', formData.age, '1-110'],
             ['Resting BP', `${formData.trestbps} mm Hg`, '90-140'],
             ['Cholesterol', `${formData.chol} mg/dl`, '125-200'],
@@ -231,7 +249,7 @@ function AppContent() {
         doc.setFontSize(8); doc.text('System Engineer (SBTabanar)', 20, lastY + 5);
         doc.text('Reviewing Clinician', pageWidth - 80, lastY + 5);
 
-        doc.save(`SafeBeat_Report_${formData.patientName.replace(/\s+/g, '_')}.pdf`);
+        doc.save(`SafeBeat_Report_${safeName.replace(/\s+/g, '_')}.pdf`);
         addToast(simpleMode ? 'Report saved!' : 'PDF report downloaded', 'success');
       });
     });
@@ -348,7 +366,7 @@ function AppContent() {
             >
               <div className="modal-header">
                 <h3><Keyboard size={18} /> Keyboard Shortcuts</h3>
-                <button className="modal-close" onClick={() => setShowShortcuts(false)}><X size={18} /></button>
+                <button className="modal-close" onClick={() => setShowShortcuts(false)} aria-label="Close shortcuts"><X size={18} /></button>
               </div>
               <div className="modal-body shortcuts-body">
                 <div className="shortcut-row"><kbd><Command size={12} /> Enter</kbd><span>Run Analysis</span></div>
@@ -362,6 +380,13 @@ function AppContent() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {ephemeralMode && (
+        <div className="ephemeral-banner" role="status" aria-live="polite">
+          <ShieldAlert size={14} />
+          <span>Ephemeral mode: data is not saved to local storage</span>
+        </div>
+      )}
 
       <div className="main-card">
         <Navbar
@@ -384,6 +409,11 @@ function AppContent() {
           onShowShortcuts={() => setShowShortcuts(true)}
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
+          ephemeralMode={ephemeralMode}
+          onToggleEphemeral={() => {
+            setEphemeralMode(!ephemeralMode);
+            addToast(!ephemeralMode ? 'Ephemeral mode enabled. History will not be saved.' : 'Ephemeral mode disabled. History will be saved.', 'info');
+          }}
         />
 
         <div className="app-main-body">
@@ -408,6 +438,7 @@ function AppContent() {
               isTutorialActive={isTutorialActive}
               isTutorialTarget={getTutorialTarget()}
               loading={loading}
+              referenceRanges={result?.reference_ranges}
             />
 
             <ResultsPanel
@@ -438,7 +469,9 @@ export default function App() {
   return (
     <ToastProvider>
       <SimpleModeProvider>
-        <AppContent />
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
       </SimpleModeProvider>
     </ToastProvider>
   );
