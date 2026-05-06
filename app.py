@@ -217,6 +217,10 @@ def create_app(config: Config = None) -> Flask:
             "timestamp": datetime.utcnow().isoformat() + "Z",
         }), 200 if ensemble else 503
 
+    @app.route("/api/health", methods=["GET"])
+    def api_health():
+        return health()
+
     @app.route("/api/v1/predict", methods=["POST"])
     @limiter.limit("20 per minute")
     def predict_v1():
